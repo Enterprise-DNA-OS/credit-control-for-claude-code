@@ -1,13 +1,30 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Credit Control for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Weekly credit-control desk",
+    "subtitle": "Internal review only. Balances are imported snapshots, promises are not receipts.",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Ageing by entity and currency",
+        "sql": "select * from ageing_summary order by entity,currency"
+      },
+      {
+        "title": "Invoices and next action",
+        "sql": "select customer,number,currency,outstanding_cents,days_overdue,next_action from invoice_work order by days_overdue desc,number"
+      }
+    ]
+  },
+  {
+    "name": "exceptions",
+    "title": "Disputes and source checks",
+    "sections": [
+      {
+        "title": "Record checks",
+        "sql": "select number,customer,rule,finding from compliance_findings order by rule,number"
+      },
+      {
+        "title": "Unresolved promises",
+        "sql": "select customer,number,currency,amount_cents,due_on,status from promise_work where status='open' order by due_on"
       }
     ]
   }

@@ -1,0 +1,42 @@
+[
+  [
+    "Which overdue invoices are ready for a reviewed reminder today?",
+    "chase-list"
+  ],
+  [
+    "Which overdue invoices have an open dispute, a contact hold or an unreviewed import?",
+    "attention"
+  ],
+  [
+    "Which promised payments are due this week but have not been marked kept?",
+    "promises-due"
+  ],
+  [
+    "Which balances are too old to use in a reminder?",
+    "source-check"
+  ],
+  [
+    "Which customers need their contact details verified before drafting?",
+    "compliance"
+  ],
+  [
+    "How much is outstanding in each entity and currency without mixing exchange rates?",
+    "ageing"
+  ],
+  [
+    "Which account owners carry the oldest overdue balances and disputed amounts?",
+    "exposure"
+  ],
+  [
+    "Which invoices have gone quiet since the last recorded conversation?",
+    "attention"
+  ],
+  [
+    "Which future commitments remain open on eligible accounts?",
+    "promise-plan"
+  ],
+  [
+    "What changed in a balance, and which source and operator support it?",
+    "invoice"
+  ]
+]

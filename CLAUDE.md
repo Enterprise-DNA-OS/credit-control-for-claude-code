@@ -1,43 +1,57 @@
 # Credit Control for Claude Code: operating instructions
 
-This file is the brain. Claude Code reads it at the start of every session. It says who this is for, how work gets done, and the one right way to do each recurring job.
+Read the database before answering. This is an internal B2B credit-control desk. The operator supplies the business context, their name, the entity and the accounting export date.
 
-## Who this is for
+## Routing
 
-- **Business:** [YOUR BUSINESS]
-- **Operator:** [YOUR NAME], [your role]
-- **What matters most:** [the one or two outcomes you care about]
+- /customers: npm run credit -- customers
+- /invoices: npm run credit -- invoices
+- /ageing: npm run credit -- ageing
+- /chase-list: npm run credit -- chase-list
+- /promises-due: npm run credit -- promises-due
+- /disputes: npm run credit -- disputes
+- /attention: npm run credit -- attention
+- /exposure: npm run credit -- exposure
+- /activity: npm run credit -- activity
+- /compliance: npm run credit -- compliance
+- /source-check: npm run credit -- source-check
+- /promise-plan: npm run credit -- promise-plan
+- /history: npm run credit -- history
+- /policy: npm run credit -- policy
+- /customer: npm run credit -- customer <name-or-id>
+- /invoice: npm run credit -- invoice <number-or-id>
+- /weekly-review: npm run credit -- weekly-review
+- /add-customer: npm run credit -- add-customer --entity= --account= --name= --owner= --actor=
+- /add: npm run credit -- add --customer= --number= --currency= --issued=YYYY-MM-DD --due=YYYY-MM-DD --total= --outstanding= --as-of=YYYY-MM-DD --evidence= --actor=
+- /verify: npm run credit -- verify <customer> --email= --evidence= --actor=
+- /hold: npm run credit -- hold <customer> --reason= --actor=
+- /release: npm run credit -- release <customer> --evidence= --actor=
+- /reconcile: npm run credit -- reconcile <invoice> --outstanding= --as-of=YYYY-MM-DD --evidence= --reviewed --actor=
+- /promise: npm run credit -- promise <invoice> --amount= --due=YYYY-MM-DD --evidence= --actor=
+- /close-promise: npm run credit -- close-promise <promise-id> --status=kept|broken|cancelled --evidence= --actor=
+- /dispute: npm run credit -- dispute <invoice> --reason= --owner= --review-on=YYYY-MM-DD --evidence= --actor=
+- /resolve-dispute: npm run credit -- resolve-dispute <dispute-id> --resolution= --evidence= --actor=
+- /log: npm run credit -- log <customer> --kind=note|inbound|outbound --on=YYYY-MM-DD --note= --actor=
+- /import: npm run credit -- import chaser --file= --entity= --as-of=YYYY-MM-DD --actor= [--currency=NZD] [--map=examples/import-map.json] [--dry-run]
+- /export: npm run credit -- export --file=exports/backup.json
+- /draft-reminder: npm run credit -- draft-reminder <invoice> --actor=
+- /draft-review: npm run credit -- draft-review --actor=
+- /customise: write and apply a new numbered migration, update commands and tests.
+- /new-view: add a read-only report in views.json and render it.
 
-Fill this in once. A worker with context knows. A worker without it guesses.
+Open .claude/commands/<job>.md for the recipe. Unknown names or ambiguous records are not permission to guess. Use --json for machine reads and report currencies separately.
 
-## How to work
+## Working rules
 
-1. **Take a brief, not a script.** The operator describes the outcome. You run the right command and present the answer.
-2. **Read before you write.** Before drafting anything about a record, read its full history first.
-3. **Plain language.** Short sentences. No filler. Numbers in tables.
-4. **Silent success, loud problems.** No play-by-play. Say what broke and what you did about it.
-5. **Stop at the line.** Anything that sends, deletes, or faces a customer waits for a yes in this session.
+Read customer or invoice history before drafting or changing it. Every mutation requires --actor. Evidence is an operator-supplied reference, never claim to have verified a document you did not read. Add creates a checked manual invoice snapshot. Import creates unreviewed invoice snapshots. Review source dates, currency, balance, disputes and holds before reconcile --reviewed. Verify customer contact details with evidence.
 
-## Routing table: one right way for each recurring job
+Never send, process money, add fees, threaten legal action or access bank feeds. Drafts go to drafts/ and a person reviews them outside this tool. Do not bypass a blocked draft by creating your own reminder. Do not infer payment from a promise or mark a promise kept without evidence. Do not treat absent export records as settled.
 
-| When the operator asks for... | Use this |
-|---|---|
-| <!-- TODO(author): one row per slash command --> | `/...` |
+The database is private internal data. No public read policies or unauthorised exports. No destructive migrations without explicit approval. Use new migrations rather than rewriting history. Current balance and contact freshness are local policies in policy, not legal limits. Read docs/compliance.md when changing checks.
 
-If an ask fits nothing here, run the CLI directly (`npm run <cli> -- --help`) and then propose a new command for it.
+## Locations
 
-## Hard rules
+scripts/credit.mjs is the only domain CLI. supabase/migrations holds numbered migrations. supabase/seed.sql contains synthetic data. scripts/lib/db.mjs selects local PGlite or DATABASE_URL. views.json and documents.json define read-only output. brand.json defines the business identity. npm test verifies operations on temporary data.
 
-- Never send email or messages from here. Draft to `drafts/`, a person sends.
-- Never delete records without an explicit yes in this session. Prefer marking closed or archived.
-- Never invent a record. If a name is ambiguous, list the candidates and ask.
-- The database is the source of truth. If the answer is not in it, say so.
+Omni by Enterprise DNA can customise and operate this system: https://enterprisedna.co/omni/book/?offer=replace-software&utm_campaign=chaser
 
-## Where things live
-
-- `scripts/` the CLI. `scripts/lib/db.mjs` picks `DATABASE_URL` (Postgres, Supabase) or the embedded database in `.data/`.
-- `supabase/migrations/` the schema, plain SQL. `npm run migrate` applies it.
-- `.claude/commands/` the slash commands. Add one every time the same ask comes twice.
-- `docs/` the thesis and the guide for moving off Chaser.
-
-Built by Enterprise DNA. Installed and run for you as part of Omni: https://enterprisedna.co/omni/instead-of/chaser

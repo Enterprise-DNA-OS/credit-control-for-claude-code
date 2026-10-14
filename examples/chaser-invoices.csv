@@ -1,0 +1,3 @@
+Customer ID,Customer,Invoice number,Currency,Issue date,Due date,Initial value,Outstanding value
+DEMO-EXPORT,Export Example Ltd,EXP-100,NZD,2026-01-01,2026-01-31,1234.56,234.56
+DEMO-EXPORT,Export Example Ltd,EXP-101,NZD,2026-02-01,2026-02-28,100.00,0.00

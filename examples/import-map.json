@@ -1,0 +1,10 @@
+{
+  "account": "Customer ID",
+  "customer": "Customer",
+  "number": "Invoice number",
+  "currency": "Currency",
+  "issued": "Issue date",
+  "due": "Due date",
+  "total": "Initial value",
+  "outstanding": "Outstanding value"
+}

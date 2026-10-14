@@ -1,11 +1,44 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "statement",
+    "title": "Draft invoice balance statement",
+    "for_each": "select id,name from customers order by name",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Invoice balances",
+        "note": "Internal draft. Reconcile unallocated credits and payments in your accounting system before sending. Currency totals stay separate.",
+        "sql": "select number,currency,issued_on,due_on,total_cents,outstanding_cents,balance_as_of,next_action from invoice_work where customer_id=$1 order by currency,due_on"
+      },
+      {
+        "title": "Totals by currency",
+        "sql": "select currency,sum(outstanding_cents) as outstanding_cents from invoices where customer_id=$1 group by currency order by currency"
+      }
+    ]
+  },
+  {
+    "name": "dispute-brief",
+    "title": "Internal dispute review brief",
+    "for_each": "select d.id,w.number as name from disputes d join invoice_work w on w.id=d.invoice_id where d.status='open'",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Issue and next review",
+        "sql": "select w.customer,w.number,w.currency,w.outstanding_cents,d.reason,d.owner,d.review_on,d.evidence from disputes d join invoice_work w on w.id=d.invoice_id where d.id=$1"
+      }
+    ]
+  },
+  {
+    "name": "promise-record",
+    "title": "Internal payment promise record",
+    "for_each": "select id,id as name from promises",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Commitment and status",
+        "note": "A recorded promise does not change the invoice balance and is not proof of payment.",
+        "sql": "select customer,number,currency,amount_cents,due_on,status,evidence,resolution from promise_work where id=$1"
+      }
     ]
   }
 ]
